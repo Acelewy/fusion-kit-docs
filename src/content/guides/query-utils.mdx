@@ -1,0 +1,107 @@
+---
+title: Auth-refresh queries with RTK Query
+description: Stop users from getting logged out on an expired access token.
+---
+
+If your app uses RTK Query against an API with short-lived access tokens,
+you've probably hit this: a request fails with `401`, and without extra
+handling, the user gets logged out even though their refresh token is still
+valid. Fusion Kit's `query-utils` subpath wraps RTK Query's base query so a
+`401` triggers a silent token refresh and retry instead.
+
+## Prerequisites
+
+- RTK Query already set up in your app (`@reduxjs/toolkit`)
+- A `/auth/refresh` endpoint (or equivalent) that exchanges a refresh token
+  for a new access token
+- `async-mutex` installed as a peer dependency
+
+```bash
+npm install @reduxjs/toolkit async-mutex
+```
+
+## Wrap your base query
+
+<Steps>
+  <Step title="Install the query-utils subpath">
+    ```bash
+    npm install @llvveess/fusion-kit
+    ```
+
+    Fusion Kit uses subpath exports, so this one import only pulls in the
+    query-utils code, not the hooks or UI primitives.
+  </Step>
+
+  <Step title="Create the auth-refresh base query">
+    ```ts
+    import { createAuthRefreshBaseQuery } from "@llvveess/fusion-kit/query-utils";
+    import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+    const rawBaseQuery = fetchBaseQuery({ baseUrl: "/api" });
+
+    export const baseQueryWithReauth = createAuthRefreshBaseQuery({
+      baseQuery: rawBaseQuery,
+      refreshEndpoint: "/auth/refresh",
+      onRefreshFailure: () => {
+        // e.g. dispatch a logout action
+      },
+    });
+    ```
+  </Step>
+
+  <Step title="Use it in your API slice">
+    ```ts
+    import { createApi } from "@reduxjs/toolkit/query/react";
+    import { baseQueryWithReauth } from "./base-query";
+
+    export const api = createApi({
+      reducerPath: "api",
+      baseQuery: baseQueryWithReauth,
+      endpoints: (builder) => ({
+        // your endpoints
+      }),
+    });
+    ```
+  </Step>
+
+  <Step title="Normalize errors for your UI">
+    `normalizeApiError` turns whatever shape your backend returns into a
+    consistent `{ message, status }` object, so your components don't need to
+    know your API's error format.
+
+    ```ts
+    import { normalizeApiError } from "@llvveess/fusion-kit/query-utils";
+
+    const { message } = normalizeApiError(error);
+    ```
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+<Accordion title="Multiple requests all trigger their own refresh">
+  This is what `async-mutex` is for. The base query acquires a mutex before
+  refreshing, so if five requests fail with `401` at once, only the first one
+  refreshes the token, the rest wait on the mutex and then retry with the new
+  token. If you're seeing multiple refresh calls, double-check `async-mutex`
+  is actually installed, not just listed as a peer dependency.
+</Accordion>
+
+<Accordion title="Refresh succeeds but the retried request still 401s">
+  Make sure your `rawBaseQuery` reads the access token from the same place
+  your refresh logic writes it to (a cookie, localStorage, or Redux state).
+  A common mistake is refreshing into Redux state but still reading the old
+  token from a stale closure in `prepareHeaders`.
+</Accordion>
+
+<Accordion title="onRefreshFailure never fires">
+  Confirm your refresh endpoint actually returns a non-2xx status on an
+  invalid/expired refresh token. If it returns `200` with an error payload
+  instead, the base query has no way to know the refresh failed.
+</Accordion>
+
+<Note type="info" title="Why this exists">
+  I built this after hitting the same silent-logout bug across more than one
+  production app, the fix is always the same shape, so it made sense to stop
+  rewriting it per project.
+</Note>

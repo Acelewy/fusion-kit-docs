@@ -1,47 +1,84 @@
 ---
 title: Quickstart
-description: Guide a new reader through one useful workflow and show them how to verify it.
+description: Install Fusion Kit and merge your first class names.
 ---
 
-A strong quickstart produces one meaningful result. Replace the placeholders
-below with the shortest supported path for your product.
+This quickstart gets you from an empty terminal to a working `cn()` call —
+Fusion Kit's class-name merge utility — in a Next.js project.
 
-## Before you begin
+## Prerequisites
 
-List only the requirements needed for this workflow:
-
-- An account or credential, when required
-- A supported runtime, device, browser, or operating system
-- Permission to create or change the resource used in the example
+- Node.js 18 or later
+- An existing Next.js 13+ project (App Router or Pages Router)
+- Tailwind CSS configured in that project
 
 <Steps>
-  <Step title="Install the required tool">
-    Give readers one recommended installation command.
+  <Step title="Install the package">
+    <Tabs>
+      <Tab title="npm">
+        ```bash
+        npm install @llvveess/fusion-kit
+        ```
+      </Tab>
+      <Tab title="pnpm">
+        ```bash
+        pnpm install @llvveess/fusion-kit
+        ```
+      </Tab>
+      <Tab title="yarn">
+        ```bash
+        yarn add @llvveess/fusion-kit
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
 
-    ```bash
-    npm install your-package
+  <Step title="Import cn from the root export">
+    `cn()` merges Tailwind class strings and resolves conflicts — later
+    classes win, so conditional styling doesn't fight your defaults.
+
+    ```tsx
+    import { cn } from "@llvveess/fusion-kit";
+
+    function Button({ active, className }: { active?: boolean; className?: string }) {
+      return (
+        <button
+          className={cn(
+            "rounded-md px-4 py-2 text-sm font-medium",
+            active ? "bg-black text-white" : "bg-gray-100 text-gray-900",
+            className
+          )}
+        >
+          Click me
+        </button>
+      );
+    }
     ```
   </Step>
-  <Step title="Add the minimum configuration">
-    Include only the values needed for the first successful run.
 
-    ```bash
-    your-cli init
-    ```
-  </Step>
-  <Step title="Complete the first task">
-    Use a realistic example that produces an observable result.
-
-    ```bash
-    your-cli start
-    ```
-  </Step>
-  <Step title="Verify the result">
-    State exactly what the reader should see and how to recover when it does not appear.
+  <Step title="Verify it worked">
+    Render the component with `active` set to both `true` and `false`. You
+    should see the background and text color swap cleanly, with no leftover
+    classes from the inactive state bleeding through, that's `cn()` resolving
+    the conflict between `bg-black`/`bg-gray-100`.
   </Step>
 </Steps>
 
-## Choose the next task
+## What's next
 
-Link to the guide that naturally follows this result. Avoid ending the reader’s
-journey with a generic list of every feature.
+<CardGroup cols="2">
+  <Card title="Query utils guide" icon="wrench" href="/guides/query-utils">
+    Add an auth-refresh base query so expired access tokens are retried
+    automatically in RTK Query.
+  </Card>
+  <Card title="View the source" icon="code-simple" href="https://github.com/Acelewy/fusion-kit">
+    See the full list of subpaths and what each one exports.
+  </Card>
+</CardGroup>
+
+<Note type="warning" title="Package is in active development">
+  Fusion Kit is a young package (currently a handful of commits), so some
+  subpaths listed in the README roadmap are still being filled in. Check the
+  repository's README for the current state of each export before relying on
+  it in production.
+</Note>

@@ -1,45 +1,51 @@
 ---
 title: Introduction
-description: Give readers a clear path from their first question to a result they can verify.
+description: A collection of React, Next.js, and TypeScript utilities for production apps.
 mode: home
 ---
 
 <Hero
-  title="Build documentation around the reader"
-  subtitle="Start with a useful first result, organize what follows, and publish every format from one reviewable source."
+  title="Fusion Kit"
+  subtitle="A growing collection of React, Next.js, and TypeScript utilities — hooks, formatters, RTK Query helpers, and UI primitives — pulled from patterns duplicated across multiple production codebases."
   primaryLabel="Get started"
   primaryHref="/quickstart"
-  secondaryLabel="Publish your docs"
-  secondaryHref="/guides/create-a-site"
+  secondaryLabel="View on GitHub"
+  secondaryHref="https://github.com/Acelewy/fusion-kit"
 />
 
-## Build the reader journey
+## What it is
 
-Begin with the task that brings most readers to your documentation, then make
-the next useful step obvious.
+Fusion Kit started as an internal pattern I kept rebuilding across different
+projects: the same class-name merge helper, the same RTK Query auth-refresh
+wrapper, the same form-to-API glue. Instead of copy-pasting it between
+codebases, I pulled it into one published package so it's versioned,
+tested, and reusable.
+
+It's built for **Next.js 13+** apps (App Router or Pages Router) written in
+TypeScript, and it's meant to be imported piece by piece rather than as one
+large bundle.
 
 <CardGroup cols="2">
-  <Card title="Write your quickstart" icon="party-horn" href="/quickstart">
-    Turn prerequisites, setup, one realistic task, and verification into a short path.
+  <Card title="Quickstart" icon="party-horn" href="/quickstart">
+    Install the package and merge your first class names in under five minutes.
   </Card>
-  <Card title="Organize your navigation" icon="grid-round" href="/customization">
-    Group related tasks and references around how people use your product.
-  </Card>
-  <Card title="Document your API" icon="code-simple" href="/api">
-    Replace `openapi.yaml` to publish browsable endpoint docs with a live playground.
-  </Card>
-  <Card title="Learn the Thally workflow" icon="wrench" href="/guides/create-a-site">
-    Create, publish, and update sites from the Cloud dashboard, the CLI, or your AI tools.
+  <Card title="Query utils guide" icon="wrench" href="/guides/query-utils">
+    Wire up the RTK Query auth-refresh helper so expired tokens are retried
+    automatically instead of logging users out.
   </Card>
 </CardGroup>
 
-## Publish from one source
+## Why subpath imports
 
-Thally turns the same reviewed content into HTML, search, agent discovery files,
-Markdown mirrors, and a read-only MCP surface — so people and AI tools read the
-same, current answer. Add only the locales your readers need.
+Fusion Kit ships each feature area as its own subpath — `fusion-kit/hooks`,
+`fusion-kit/format`, `fusion-kit/query-utils`, `fusion-kit/ui`, `fusion-kit/forms`
+— instead of one flat export. That means your bundler only pulls in the code
+you actually import, and a project that only needs the `cn()` class-name
+helper doesn't also ship RTK Query glue it never calls.
 
-<Note type="info" title="Start with the product, not the template">
-  Replace this page with the questions, terminology, and workflows your readers
-  already use. Keep `docs.json` focused on the path between those tasks.
+<Note type="info" title="Who this is for">
+  Fusion Kit is for React/Next.js developers who are tired of re-solving the
+  same small problems (debounced inputs, currency formatting, auth-refresh
+  base queries) in every new project and want a tested, versioned place to
+  pull them from instead.
 </Note>

@@ -160,13 +160,13 @@ const brandPresets: Record<BrandPresetKey, BrandConfig> = {
 const brandPreset: BrandPresetKey = 'primary'
 
 export const siteConfig: SiteConfig = {
-  name: 'Fusion Kit Docs',
+  name: 'Fusion Kit',
   description:
-    'Documentation for Fusion Kit Docs.',
-  repoUrl: '',
+    'React, Next.js, and TypeScript utilities for production apps — hooks, formatters, RTK Query helpers, and UI primitives.',
+  repoUrl: 'https://github.com/Acelewy/fusion-kit',
   links: [
     { label: 'Get started', href: '/quickstart' },
-    { label: 'Changelog', href: '/changelog' },
+    { label: 'GitHub', href: 'https://github.com/Acelewy/fusion-kit' },
   ],
   brand: brandPresets[brandPreset],
   brandPreset,
